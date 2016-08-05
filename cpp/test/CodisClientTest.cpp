@@ -2,12 +2,12 @@
 #include "RoundRobinCodisPool.h"
 #include "gtest/gtest.h"
 #include "Utils.h"
-
+#include "util.h"
 
 using namespace std;
 using namespace bfd::codis;
 
-CodisClient client("192.168.161.20", 6379, "item");
+/*CodisClient client("192.168.22.125", 19000, "item");
 
 
 TEST(RedisClientTest, setRedisCommand)
@@ -478,13 +478,22 @@ TEST(RedisClientTest, hgetall)
 	EXPECT_EQ(values.size(), 1);
 	EXPECT_STREQ(keys[0].c_str(), "field2");
 	EXPECT_STREQ(values[0].c_str(), "13");
-}
+}*/
 
 TEST(RedisClientTest, codis)
 {
-	RoundRobinCodisPool pool("192.168.161.22:2181", "/zk/codis/db_test/proxy", "businessID");
+	//RoundRobinCodisPool pool("192.168.22.125:2181,192.168.22.126:2181,192.168.22.127:2181", "/zk/codis/db_test/proxy", "businessID");
+    reborn::hostArray m_hosts;
+    reborn::host t_host("localhost","2379");
+    reborn::host t_host_2("localhost","22379");
+    reborn::host t_host_3("localhost","32379");
 
-	for (int i=0; i<10; i++)
+    m_hosts.addHost(t_host_3);
+    m_hosts.addHost(t_host_2);
+
+    m_hosts.addHost(t_host);
+	RoundRobinCodisPool pool(m_hosts, "/zk/reborn/db_test/proxy", "businessID");
+	for (int i=0; i<100000; i++)
 	{
 		bool ret = pool.GetProxy()->set("kkk", "vvv");
 		cout << "ret=" << ret << endl;
