@@ -1,9 +1,10 @@
-CXX = g++
+CXX = g++  --std=c++11
 AR = ar cr
 OBJ_DIR = obj
 SRC_DIR = src
 
-INCPATH = -Iinclude
+INCPATH += -Iinclude
+INCPATH += -I/usr/include
 INCPATH += -I3party/include
 INCPATH += -I3party/include/hiredis
 INCPATH += -I3party/include/zookeeper
@@ -12,6 +13,7 @@ LFLAGS = -L3party/lib -lhiredis
 LFLAGS += -L3party/lib -lzookeeper_mt
 LFLAGS += -L3party/lib -ljemalloc -pthread
 LFLAGS += -L3party/lib -ljson
+LFLAGS += -lcurl
 
 
 TARGETSO = bin/libcodisclient.so
@@ -23,7 +25,7 @@ CXX_OBJS = $(OBJ_DIR)/CodisClient.o \
 			$(OBJ_DIR)/ae.o \
 			$(OBJ_DIR)/zmalloc.o \
 			$(OBJ_DIR)/Command.o \
-			$(OBJ_DIR)/BfdCodis.o
+			$(OBJ_DIR)/util.o
 			
 $(OBJ_DIR)/%.o:$(SRC_DIR)/%.cpp
 	$(CXX) -c -fPIC -o $@ $< $(INCPATH) $(LFLAGS)
@@ -43,7 +45,7 @@ clean:
 
 .PHONY:test
 test:
-	-rm -f bin/RedisClientDemo
+	-rm -f bin/RedisClientTest
 	make -f CodisClientTest.Makefile
 	export LD_LIBRARY_PATH=./bin/:${LD_LIBRARY_PATH}
-	./bin/CodisClientDemo
+	./bin/CodisClientTest
